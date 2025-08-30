@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react"
+import React,{ useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Eye } from "lucide-react"
 
@@ -14,7 +14,7 @@ export default function HeaderComponent() {
   const [activeTab, setActiveTab] = useState("useful-saas")
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between px-4 md:px-8 py-4 md:py-6 bg-white/95 backdrop-blur-sm border-b border-gray-200/60 shadow-sm">
+    <header className="flex items-center justify-between px-4 md:px-8 py-4 md:py-6 bg-white/95 backdrop-blur-sm border-b border-gray-200/60 shadow-sm">
       <div className="flex-1 overflow-x-auto scrollbar-hide mr-4 pb-2 md:pb-3">
         <nav className="flex items-center gap-6 md:gap-10 min-w-max">
           {navigationItems.map((tab) => (

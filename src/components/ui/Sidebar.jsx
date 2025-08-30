@@ -130,7 +130,7 @@ const Sidebar = ({
 
   useEffect(() => {
     const checkMobile = () => {
-      const mobile = window.innerWidth < 768
+      const mobile = window.innerWidth < 1030
       setIsMobile(mobile)
       if (mobile) {
         onCollapsedChange(true)

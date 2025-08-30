@@ -1,6 +1,5 @@
 "use client"
-import * as React from "react"
-import { useState, useRef, useEffect } from "react"
+import React,{ useState, useRef, useEffect } from "react"
 import { Button } from "./button"
 import { Input } from "./input"
 import AddTransformationModal from "./AddTransformationModal"
@@ -27,7 +26,6 @@ import { useNavigate } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 import { Tooltip, TooltipTrigger, TooltipContent } from "./tooltip"
 import TransformationLimitBar from "../transformations/TransformationLimitBar"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 
 const Sidebar = ({
@@ -62,6 +60,16 @@ const Sidebar = ({
   const { logout } = useAuth()
 
   const [selectedLanguage, setSelectedLanguage] = useState("english")
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false)
+  const languageRef = useRef()
+
+  const languages = [
+    { value: "english", label: "English" },
+    { value: "spanish", label: "Español" },
+    { value: "french", label: "Français" },
+    { value: "deutsch", label: "Deutsch" },
+  ]
+
   const bottomItems = [
     {
       label: "Upgrade to PLUS",
@@ -72,6 +80,13 @@ const Sidebar = ({
       label: "Profile",
       icon: <User className="w-5 h-5 text-[#b3b3b3]" />,
       onClick: () => {},
+    },
+    
+    {
+      label: languages.find((lang) => lang.value === selectedLanguage)?.label || "English",
+      icon: <Globe className="w-5 h-5 text-[#b3b3b3]" />,
+      onClick: () => setShowLanguageDropdown(!showLanguageDropdown),
+      isLanguage: true,
     },
     {
       label: "Integrations",
@@ -89,39 +104,39 @@ const Sidebar = ({
           navigate("/signin")
         }),
     },
-    //  {
-    //   label: "Install Chrome Browser Extension",
-    //   icon: <chromeIcon className="w-5 h-5 text-[#b3b3b3]" />,
-    //   onClick: () => {},
-    // },
   ]
 
   const handleMenuAction = (action, item) => {
     switch (action) {
       case "edit":
         setModalMode("edit")
-        setEditingItem({
-          name: item,
-          description: "",
-        })
+        setEditingItem(item)
         setShowModal(true)
         break
       case "copyWithoutData":
+        console.log("Copy without data:", item)
         break
       case "copyWithData":
+        console.log("Copy with data:", item)
         break
       case "unsubscribe":
+        console.log("Unsubscribe:", item)
         break
       case "delete":
+        console.log("Delete:", item)
+        break
+      default:
         break
     }
-    setOpenMenuIdx(null)
   }
 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setOpenMenuIdx(null)
+      }
+      if (languageRef.current && !languageRef.current.contains(e.target)) {
+        setShowLanguageDropdown(false)
       }
     }
     document.addEventListener("mousedown", handleClickOutside)
@@ -154,7 +169,7 @@ const Sidebar = ({
       <circle cx="24" cy="24" r="20" fill="#fff" />
       <path fill="#ea4335" d="M24 4a20 20 0 0 1 17.32 10H24z" />
       <path fill="#4285f4" d="M24 44a20 20 0 0 1-17.32-10H24z" />
-      <path fill="#fbbc04" d="M44 24a20 20 0 0 1-20 20V24z" />
+      <path fill="#fbbc04" d="M44 24a20 20 0 0 1-20 20v20z" />
       <path fill="#34a853" d="M4 24a20 20 0 0 1 20-20v20z" />
       <circle cx="24" cy="24" r="8" fill="#fff" />
       <circle cx="24" cy="24" r="5" fill="#4285f4" />
@@ -163,7 +178,6 @@ const Sidebar = ({
 
   return (
     <>
-      {/* Mobile overlay when sidebar is open */}
       {isMobile && !isCollapsed && (
         <div
           className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
@@ -190,7 +204,6 @@ const Sidebar = ({
           </button>
         )}
 
-        {/* Sidebar content */}
         <div className="flex-1 flex flex-col h-full overflow-hidden">
           {!isCollapsed && (
             <div className="flex-shrink-0 flex items-center justify-between px-6 py-2 border-b border-slate-800/50">
@@ -200,7 +213,6 @@ const Sidebar = ({
                 </div>
                 <div className="flex flex-col">
                   <span className="font-semibold text-sm text-white truncate">{userEmail}</span>
-                  <span className="text-xs text-slate-400">Premium User</span>
                 </div>
               </div>
               {isMobile && (
@@ -215,30 +227,6 @@ const Sidebar = ({
           )}
 
           {!isCollapsed && (
-            <div className="flex-shrink-0 px-6 py-1 border-b border-slate-800/50">
-              <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-                <SelectTrigger className="w-full bg-slate-800 border-slate-700 text-white hover:bg-slate-700 transition-colors h-11 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <Globe size={16} className="text-slate-400" />
-                    <SelectValue placeholder="Language" />
-                  </div>
-                </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-slate-700">
-                  <SelectItem value="english" className="text-white hover:bg-slate-700 focus:bg-slate-700">
-                    English
-                  </SelectItem>
-                  <SelectItem value="spanish" className="text-white hover:bg-slate-700 focus:bg-slate-700">
-                    Spanish
-                  </SelectItem>
-                  <SelectItem value="french" className="text-white hover:bg-slate-700 focus:bg-slate-700">
-                    French
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {!isCollapsed && (
             <div className="flex-shrink-0 px-6 py-1">
               <Button
                 onClick={() => {
@@ -246,7 +234,7 @@ const Sidebar = ({
                   setIsStickyHeader(false)
                   if (isMobile) onCollapsedChange(true)
                 }}
-                 className="bg-green-600 hover:bg-green-700 transition-colors text-white px-6 py-1 font-medium shadow-sm flex items-center gap-2 w-full justify-center"
+                className="bg-green-600 hover:bg-green-700 transition-colors text-white px-6 py-1 font-medium shadow-sm flex items-center gap-2 w-full justify-center"
               >
                 <Plus size={18} /> New Transformation
               </Button>
@@ -306,20 +294,22 @@ const Sidebar = ({
                         if (isMobile) onCollapsedChange(true)
                       }}
                     >
-                     {isCollapsed ? <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Globe
-                            size={18}
-                            className="text-slate-400 group-hover:text-emerald-400 transition-colors flex-shrink-0"
-                          />
-                        </TooltipTrigger>
-                        <TooltipContent
-                          side="right"
-                          className="bg-slate-800 text-white rounded-lg px-3 py-1 text-sm shadow-xl border border-slate-700"
-                        >
-                          {item}
-                        </TooltipContent>
-                      </Tooltip>: (
+                      {isCollapsed ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Globe
+                              size={18}
+                              className="text-slate-400 group-hover:text-emerald-400 transition-colors flex-shrink-0"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent
+                            side="right"
+                            className="bg-slate-800 text-white rounded-lg px-3 py-1 text-sm shadow-xl border border-slate-700"
+                          >
+                            {item}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
                         <Globe
                           size={18}
                           className="text-slate-400 group-hover:text-emerald-400 transition-colors flex-shrink-0"
@@ -353,9 +343,9 @@ const Sidebar = ({
                   </div>
                   {openMenuIdx === idx && !isCollapsed && (
                     <div
-  ref={menuRef}
-  className="absolute left-2 top-2 z-50 w-56 bg-slate-800 rounded-lg shadow-2xl py-1 border border-slate-700 animate-fade-in backdrop-blur-sm"
->
+                      ref={menuRef}
+                      className="absolute left-2 top-2 z-50 w-56 bg-slate-800 rounded-lg shadow-2xl py-1 border border-slate-700 animate-fade-in backdrop-blur-sm"
+                    >
                       <button
                         onClick={() => handleMenuAction("edit", item)}
                         className="flex items-center gap-3 w-full px-4 py-1 hover:bg-slate-700 text-sm text-slate-200 hover:text-white transition-colors"
@@ -418,39 +408,40 @@ const Sidebar = ({
                   </TooltipContent>
                 </Tooltip>
               ) : (
-                <button
-                  key={item.label}
-                  onClick={item.onClick}
-                  className="flex items-center gap-3 w-full px-3 py-1 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-200 hover:text-white transition-all duration-200 border border-transparent hover:border-slate-700"
-                >
-                  {item.icon}
-                  {item.label}
-                </button>
+                <div key={item.label} className="relative">
+                  <button
+                    onClick={item.onClick}
+                    className="flex items-center gap-3 w-full px-3 py-1 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-200 hover:text-white transition-all duration-200 border border-transparent hover:border-slate-700"
+                  >
+                    {item.icon}
+                    {item.label}
+                  </button>
+                  {item.isLanguage && showLanguageDropdown && (
+                    <div
+                      ref={languageRef}
+                      className="absolute bottom-full left-0 mb-2 w-full bg-slate-800 rounded-lg shadow-2xl py-1 border border-slate-700 animate-fade-in backdrop-blur-sm z-50"
+                    >
+                      {languages.map((lang) => (
+                        <button
+                          key={lang.value}
+                          onClick={() => {
+                            setSelectedLanguage(lang.value)
+                            setShowLanguageDropdown(false)
+                          }}
+                          className={`flex items-center w-full px-4 py-2 hover:bg-slate-700 text-sm transition-colors ${
+                            selectedLanguage === lang.value
+                              ? "text-emerald-400 bg-slate-700/50"
+                              : "text-slate-200 hover:text-white"
+                          }`}
+                        >
+                          {lang.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ),
             )}
-            {/* {isCollapsed ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-slate-800 transition-colors"
-                    title="Install Chrome Browser Extension"
-                  >
-                    {chromeIcon}
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="right"
-                  className="bg-slate-800 text-white rounded-lg px-3 py-1 text-sm shadow-xl border border-slate-700"
-                >
-                  Install Chrome Browser Extension
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <button className="flex items-center w-full px-3 py-1 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-200 hover:text-white transition-all duration-200 border border-transparent hover:border-slate-700">
-                {chromeIcon}
-                Install Chrome Browser Extension
-              </button>
-            )} */}
           </div>
         </div>
       </aside>

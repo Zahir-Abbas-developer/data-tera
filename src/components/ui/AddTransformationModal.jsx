@@ -75,19 +75,32 @@ const AddTransformationModal = ({ open, onClose, mode = "create", initialData = 
                 onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
               />
             </div>
+<div className="space-y-1.5">
+  <label
+    htmlFor="description"
+    className="block text-sm font-semibold text-gray-700"
+  >
+    Description
+  </label>
 
-            <div className="space-y-1.5">
-              <label className="block text-sm font-semibold text-gray-700">Description</label>
-              <textarea
-                placeholder="Describe what this transformation does, what data it processes, and what output it generates..."
-                className="w-full border-2 border-gray-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 rounded-lg px-3 py-2.5 text-gray-900 bg-white placeholder-gray-400 outline-none min-h-[80px] resize-none transition-all duration-200 text-sm"
-                value={formData.description}
-                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-              />
-              <p className="text-xs text-gray-500">Be specific about the data fields and expected output format</p>
-            </div>
+  <textarea
+    id="description"
+    name="description"
+    rows={4}   // 👈 limits visible lines to 3
+    placeholder="Description example: This transformation is used to collect a list of contacts of speakers and attendees of the conferences including persons' name, position, company name, email, LinkedIn profile, X (Twitter) profile, and the conference name and website."
+    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:border-gray-400 focus:ring-0 resize-none"
+    value={formData.description}
+    onChange={(e) =>
+      setFormData((prev) => ({ ...prev, description: e.target.value }))
+    }
+  />
+</div>
 
-            <div className="space-y-1.5">
+
+
+
+
+           {mode === "create" && <div className="space-y-1.5">
               <label className="block text-sm font-semibold text-gray-700">Template</label>
               <select
                 className="w-full border-2 border-gray-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 rounded-lg px-3 py-2.5 text-gray-900 bg-white outline-none transition-all duration-200 text-sm appearance-none cursor-pointer"
@@ -102,7 +115,7 @@ const AddTransformationModal = ({ open, onClose, mode = "create", initialData = 
                 <option value="data-validation">Product Listings</option>
                 <option value="aggregation">Social Media Posts</option>
               </select>
-            </div>
+            </div>}
 
     <div className="flex flex-col sm:flex-row flex-wrap gap-x-6 gap-y-3 pt-3">
   {mode === "create" && (

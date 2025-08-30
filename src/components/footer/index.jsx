@@ -27,13 +27,13 @@ export default function FooterComponent() {
         >
           Update Google Sheet connection
         </Button>
-        <Button
+        {/* <Button
           variant="link"
           size="sm"
           className="text-blue-600 p-0 h-auto w-full sm:w-auto text-center whitespace-nowrap min-w-[180px] sm:min-w-0"
         >
           Reload Sample/Template
-        </Button>
+        </Button> */}
       </div>
   
       {/* Center checkbox */}

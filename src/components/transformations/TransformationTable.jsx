@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useRef, useEffect } from "react"
 
 const initialColumns = [
   { key: "filename", label: "FileName" },
@@ -33,6 +33,21 @@ const TransformationTable = ({ isStickyHeader, setIsStickyHeader }) => {
   const [filters, setFilters] = useState({})
   const [page, setPage] = useState(1)
   const [sort, setSort] = useState({ key: null, direction: null })
+  const [openDropdown, setOpenDropdown] = useState(null)
+  const dropdownRef = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   const filteredData = data.filter((row) =>
     columns.every((col) => !filters[col.key] || row[col.key]?.toLowerCase().includes(filters[col.key].toLowerCase())),
@@ -68,6 +83,20 @@ const TransformationTable = ({ isStickyHeader, setIsStickyHeader }) => {
     setPage(p)
   }
 
+  const handleEdit = (rowIndex) => {
+    console.log("Edit row:", rowIndex)
+    setOpenDropdown(null)
+  }
+
+  const handleDelete = (rowIndex) => {
+    console.log("Delete row:", rowIndex)
+    setOpenDropdown(null)
+  }
+
+  const toggleDropdown = (rowIndex) => {
+    setOpenDropdown(openDropdown === rowIndex ? null : rowIndex)
+  }
+
   return (
     <div className="w-full bg-white">
       <div className="sticky top-0 z-10 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 mb-6 shadow-sm">
@@ -91,7 +120,7 @@ const TransformationTable = ({ isStickyHeader, setIsStickyHeader }) => {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col h-[calc(100vh-242px)]">
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col h-[calc(100vh-280px)]">
         <div className="overflow-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
           <table className="min-w-full table-fixed">
             <thead className="sticky top-0 z-20 bg-gray-50/80 backdrop-blur-sm border-b border-gray-100">
@@ -112,7 +141,7 @@ const TransformationTable = ({ isStickyHeader, setIsStickyHeader }) => {
                               ? "20%"
                               : col.key === "title"
                                 ? "25%"
-                                : "22%",
+                                : "20%",
                     }}
                     onClick={() => handleSort(col.key)}
                   >
@@ -141,12 +170,17 @@ const TransformationTable = ({ isStickyHeader, setIsStickyHeader }) => {
                     />
                   </th>
                 ))}
+                <th className="px-6 py-4 text-left font-semibold text-gray-900 w-[2%]">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-sm font-semibold">Actions</span>
+                  </div>
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {paginatedData.length === 0 ? (
                 <tr>
-                  <td colSpan={columns.length} className="text-center py-12 text-gray-500">
+                  <td colSpan={columns.length + 1} className="text-center py-12 text-gray-500">
                     <div className="flex flex-col items-center gap-2">
                       <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
                         <span className="text-gray-400 text-xl">📄</span>
@@ -175,7 +209,7 @@ const TransformationTable = ({ isStickyHeader, setIsStickyHeader }) => {
                                   ? "20%"
                                   : col.key === "title"
                                     ? "25%"
-                                    : "22%",
+                                    : "20%",
                           wordBreak: "break-word",
                         }}
                       >
@@ -193,6 +227,37 @@ const TransformationTable = ({ isStickyHeader, setIsStickyHeader }) => {
                         )}
                       </td>
                     ))}
+                    <td className="px-6 py-4 text-sm text-gray-700 align-top w-[2%]">
+                      <div className="relative" ref={openDropdown === idx ? dropdownRef : null}>
+                        <button
+                          onClick={() => toggleDropdown(idx)}
+                          className="p-1 hover:bg-gray-100 rounded-md transition-colors"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-gray-500">
+                            <circle cx="3" cy="8" r="1.5" fill="currentColor" />
+                            <circle cx="8" cy="8" r="1.5" fill="currentColor" />
+                            <circle cx="13" cy="8" r="1.5" fill="currentColor" />
+                          </svg>
+                        </button>
+
+                        {openDropdown === idx && (
+                          <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-30 min-w-[120px]">
+                            <button
+                              onClick={() => handleEdit(idx)}
+                              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(idx)}
+                              className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 transition-colors"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}

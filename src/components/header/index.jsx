@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Eye } from "lucide-react"
 
 const navigationItems = [
   { label: "Useful SaaS", value: "useful-saas" },
@@ -38,9 +39,10 @@ export default function HeaderComponent() {
       </div>
 
       <div className="flex items-center flex-shrink-0">
-        <Button className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-3 md:px-6 py-2 md:py-2.5 text-xs md:text-sm font-semibold rounded-lg md:rounded-xl shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300 transform hover:scale-105 active:scale-95">
+        <Button className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-3 md:px-5 py-2 md:py-2.5 text-xs md:text-sm font-semibold rounded-lg md:rounded-xl shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300 transform hover:scale-105 active:scale-95">
+          <Eye className="h-3.5 w-3.5 md:h-4 md:w-4" />
           <span className="hidden sm:inline">VIEW DEMO</span>
-          <span className="sm:hidden">DEMO</span>
+          <span className="sm:hidden">VIEW DEMO</span>
         </Button>
       </div>
     </header>
